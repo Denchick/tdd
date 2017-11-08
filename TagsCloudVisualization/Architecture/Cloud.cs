@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TagsCloudVisualization.Architecture.TagTypes;
 
 namespace TagsCloudVisualization
@@ -10,14 +12,12 @@ namespace TagsCloudVisualization
     class Cloud
     {
         public List<Tag> Tags = new List<Tag>();
-
-        public Cloud(Dictionary<string, int> tagsDictionary)
+        public Point Center { get; }
+        public Cloud(Point center, List<Tuple<string, int>> tags)
         {
-            var pairs = tagsDictionary
-                .Select(e => Tuple.Create(e.Key, e.Value))
-                .OrderByDescending(e => e.Item2)
-                .ToList();
-            MakeTagsFromTuples(pairs);
+            Center = center;
+            MakeTagsFromTuples(tags);
+            MakeLayout();
         }
 
         private void MakeTagsFromTuples(List<Tuple<string, int>> pairs)
@@ -43,6 +43,16 @@ namespace TagsCloudVisualization
                 .Skip(1 + fifteenPercent + thirtyFivePercent)
                 .Select(e => new SmallTag() { Text = e.Item1 })
                 .ToList());
+        }
+
+        public void MakeLayout()
+        {
+            var layouter = new CircularCloudLayouter(Center);
+            foreach (var tag in Tags)
+            {
+                var tagSize = TextRenderer.MeasureText(tag.Text, tag.Font);
+                tag.Rectangle = layouter.PutNextRectangle(tagSize);
+            }
         }
     }
 }

@@ -8,8 +8,6 @@ namespace TagsCloudVisualization
         public int X;
         public int Y;
 
-        public double Length => Math.Sqrt(X * X + Y * Y);
-
         public static Vector operator +(Vector element1, Vector element2)
         {
             return new Vector(element1.X + element2.X, element1.Y + element2.Y);
@@ -35,11 +33,6 @@ namespace TagsCloudVisualization
             if (!(obj is Vector)) return false;
             var vector = obj as Vector;
             return X == vector.X && Y == vector.Y;
-        }
-
-        public override int GetHashCode()
-        {
-            return X.GetHashCode() * 31 + Y.GetHashCode();
         }
 
         public Vector(Point point)
