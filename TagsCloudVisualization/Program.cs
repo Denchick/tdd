@@ -15,11 +15,14 @@ namespace TagsCloudVisualization
         public static void Main()
         {
             var textFromFile = File.ReadAllText(@"text.txt");
-            var cloudCenter = new Point(300, 300);
-            var cloud = new Cloud(cloudCenter);
             var mostFrequentWords = GetMostFrequentWords(textFromFile, 70);
-            var tags = cloud.MakeTagsFromTuples(mostFrequentWords);
-            cloud.SetRectangeForEachTag(tags);
+
+            var cloudCenter = new Point(300, 300);
+            var layouter = new CircularCloudLayouter(cloudCenter);
+
+            var tags = layouter.MakeTagsFromTuples(mostFrequentWords);
+            layouter.SetRectangeForEachTag(tags);
+
             var tagsDrawer = new TagsDrawer("image.bmp", tags);
         }
 

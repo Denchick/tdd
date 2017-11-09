@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
+using TagsCloudVisualization.Architecture.TagTypes;
 
 namespace TagsCloudVisualization
 {
@@ -19,14 +21,14 @@ namespace TagsCloudVisualization
         {
             var rectangleVector = Rectangles.Count == 0
                 ? CloudCenter - new Vector(rectangleSize.Width, rectangleSize.Height) / 2
-                : GetRectangleVector(rectangleSize);
+                : GetRectanglesVector(rectangleSize);
             var rectangle = new Rectangle(rectangleVector.X, rectangleVector.Y, rectangleSize.Width,
                 rectangleSize.Height);
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        public Vector GetRectangleVector(Size rectangleSize)
+        public Vector GetRectanglesVector(Size rectangleSize)
         {
             var radius = Math.Min(Rectangles.First().Width, Rectangles.First().Height);
             var step = 1;
@@ -46,7 +48,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        private bool CouldPutRectangle(Vector rectangleVector, Size rectangleSize)
+        public bool CouldPutRectangle(Vector rectangleVector, Size rectangleSize)
         {
             if (rectangleVector.X < 0 || rectangleVector.Y < 0)
                 return false;
@@ -55,6 +57,43 @@ namespace TagsCloudVisualization
                 if (rectangle.IntersectsWith(potentialRectangle))
                     return false;
             return true;
+        }
+
+        public List<Tag> MakeTagsFromTuples(List<(string, int)> pairs)
+        {
+            var tags = new List<Tag>();
+            var fifteenPercent = (int)(pairs.Count * 0.15);
+            var thirtyFivePercent = (int)(pairs.Count * 0.35);
+
+            tags.Add(new BiggestTag() { Text = pairs.First().Item1 });
+
+            tags.AddRange(pairs
+                .Skip(1)
+                .Take(fifteenPercent)
+                .Select(e => new BigTag() { Text = e.Item1 })
+                .ToList());
+
+            tags.AddRange(pairs
+                .Skip(1 + fifteenPercent)
+                .Take(thirtyFivePercent)
+                .Select(e => new MediumTag() { Text = e.Item1 })
+                .ToList());
+
+            tags.AddRange(pairs
+                .Skip(1 + fifteenPercent + thirtyFivePercent)
+                .Select(e => new SmallTag() { Text = e.Item1 })
+                .ToList());
+
+            return tags;
+        }
+
+        public void SetRectangeForEachTag(List<Tag> tags)
+        {
+            foreach (var tag in tags)
+            {
+                var tagSize = TextRenderer.MeasureText(tag.Text, tag.Font);
+                tag.Rectangle = PutNextRectangle(tagSize);
+            }
         }
     }
 }
