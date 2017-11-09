@@ -16,30 +16,31 @@ namespace TagsCloudVisualization
 {
     public class TagsDrawer
     {
-        private List<Tag> Tags { get; }
-        private Bitmap Bitmap { get; }
-        private Point Offset { get; }
+        public List<Tag> Tags { get; }
+        public Bitmap Bitmap { get; }
+        public Size Size { get; private set; }
+        public Point Offset { get; private set; }
         public string Filename { get; }
 
-        public TagsDrawer(string filename, List<Tag> tags, Point offset, Size size)
+        public TagsDrawer(string filename, List<Tag> tags)
         {
             Filename = filename;
-            Bitmap = new Bitmap(size.Width, size.Height);
             Tags = tags;
-            Offset = offset;
+            CalculateOffsetAndSizeOfBitmap();
+            Bitmap = new Bitmap(Size.Width, Size.Height);
 
-            FillBackground(Brushes.Black);
-            DrawTags();
+            FillBitmapsBackground(Brushes.Black);
+            DrawTagsOnBitmap();
             SaveBitmap();
         }
 
-        private void FillBackground(Brush brush)
+        private void FillBitmapsBackground(Brush brush)
         {
             var graphics = Graphics.FromImage(Bitmap);
             graphics.FillRectangle(brush, 0, 0, Bitmap.Width, Bitmap.Height);
         }
 
-        private void DrawTags()
+        private void DrawTagsOnBitmap()
         {
             var graphics = Graphics.FromImage(Bitmap);
             foreach (var tag in Tags)
@@ -51,6 +52,25 @@ namespace TagsCloudVisualization
                         sourceRectangle.Size);
                 graphics.DrawString(tag.Text, tag.Font, tag.Brush, tag.Rectangle.Location);
             }
+        }
+
+        private void CalculateOffsetAndSizeOfBitmap()
+        {
+            var leftBorder = Tags
+                .Select(e => e.Rectangle.Left)
+                .Min();
+            var rightBorder = Tags
+                .Select(e => e.Rectangle.Right)
+                .Max();
+            var topBorder = Tags
+                .Select(e => e.Rectangle.Top)
+                .Min();
+            var bottomBorder = Tags
+                .Select(e => e.Rectangle.Bottom)
+                .Max();
+
+            Size = new Size(rightBorder - leftBorder, bottomBorder - topBorder);
+            Offset = new Point(leftBorder, topBorder);
         }
 
         public void SaveBitmap()

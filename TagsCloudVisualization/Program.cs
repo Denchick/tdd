@@ -15,30 +15,12 @@ namespace TagsCloudVisualization
         public static void Main()
         {
             var textFromFile = File.ReadAllText(@"text.txt");
-            var center = new Point(300, 300);
-            var cloud = new Cloud(center);
-            var tags = cloud.MakeTagsFromTuples(GetMostFrequentWords(textFromFile, 70));
-            cloud.SetEveryTagRectange(tags);
-
-            var leftBorder = tags
-                .Select(e => e.Rectangle.Left)
-                .Min();
-            var rightBorder = tags
-                .Select(e => e.Rectangle.Right)
-                .Max();
-            var topBorder = tags
-                .Select(e => e.Rectangle.Top)
-                .Min();
-            var bottomBorder = tags
-                .Select(e => e.Rectangle.Bottom)
-                .Max();
-
-            var size = new Size(rightBorder - leftBorder, bottomBorder - topBorder); 
-            var offset = new Point(leftBorder, topBorder);
-
-            var tagsDrawer = new TagsDrawer("image.bmp", tags, offset, size);
-            
-            
+            var cloudCenter = new Point(300, 300);
+            var cloud = new Cloud(cloudCenter);
+            var mostFrequentWords = GetMostFrequentWords(textFromFile, 70);
+            var tags = cloud.MakeTagsFromTuples(mostFrequentWords);
+            cloud.SetRectangeForEachTag(tags);
+            var tagsDrawer = new TagsDrawer("image.bmp", tags);
         }
 
         public static List<(string, int)> GetMostFrequentWords(string text, int count)
@@ -46,16 +28,11 @@ namespace TagsCloudVisualization
             return Regex.Split(text.ToLower(), @"\W+")
                 .Where(word => !string.IsNullOrWhiteSpace(word) && word.Length > 2)
                 .GroupBy(word => word)
-                .Select(group => (ToTitleCase(group.Key), group.Count()))
+                .Select(group => (group.Key.CapitalizeFirstLetter(), group.Count()))
                 .OrderByDescending(tuple => tuple.Item2)
                 .ThenBy(tuple => tuple.Item1)
                 .Take(count)
                 .ToList();
-        }
-
-        public static string ToTitleCase(string str)
-        {
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(str.ToLower());
         }
     }
 }

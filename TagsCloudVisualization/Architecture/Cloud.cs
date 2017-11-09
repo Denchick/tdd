@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             return tags;
         }
 
-        public void SetEveryTagRectange(List<Tag> tags)
+        public void SetRectangeForEachTag(List<Tag> tags)
         {
             var layouter = new CircularCloudLayouter(Center);
             foreach (var tag in tags)

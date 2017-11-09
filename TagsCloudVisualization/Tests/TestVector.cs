@@ -18,6 +18,7 @@ namespace TagsCloudVisualization.Utils
         public void CorrectConstructor_WhenTwoIntegersAsArguments(int x, int y)
         {
             var vector = new Vector(x, y);
+
             vector.X.Should().Be(x);
             vector.Y.Should().Be(y);
         }
@@ -29,6 +30,7 @@ namespace TagsCloudVisualization.Utils
         {
             var p = new Point(x, y);
             var vector = new Vector(p);
+
             vector.X.Should().Be(p.X);
             vector.Y.Should().Be(p.Y);
         }
@@ -50,6 +52,7 @@ namespace TagsCloudVisualization.Utils
             var vector2 = new Vector(x2, y2);
 
             var result = GetOperationResult(vector1, vector2, operation);
+
             result.X.Should().Be(expectedX);
             result.Y.Should().Be(expectedY);
         }
@@ -62,7 +65,9 @@ namespace TagsCloudVisualization.Utils
             int expectedX, int expectedY, string operation)
         {
             var vector = new Vector(x, y);
+
             var result = GetOperationResult(vector, number, operation);
+
             result.X.Should().Be(expectedX);
             result.Y.Should().Be(expectedY);
         }
@@ -73,6 +78,7 @@ namespace TagsCloudVisualization.Utils
         public void СorrectСonversionVectorToPoint(int x, int y, int expecredX, int expectedY)
         {
             var point = new Vector(x, y).ToPoint();
+
             point.X.Should().Be(expecredX);
             point.Y.Should().Be(expectedY);
         }

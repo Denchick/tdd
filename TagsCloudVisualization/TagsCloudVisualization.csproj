@@ -71,6 +71,7 @@
     <Compile Include="Architecture\Tag.cs" />
     <Compile Include="Tests\TestCloudLayouter.cs" />
     <Compile Include="Tests\TestVector.cs" />
+    <Compile Include="Utils\StringExtension.cs" />
     <Compile Include="Utils\Vector.cs" />
   </ItemGroup>
   <ItemGroup>
