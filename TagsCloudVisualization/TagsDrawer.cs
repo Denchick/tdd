@@ -19,21 +19,29 @@ namespace TagsCloudVisualization
         private List<Tag> Tags { get; }
         private Bitmap Bitmap { get; }
         private Point Offset { get; }
-        
-        public TagsDrawer(Bitmap bitmap, List<Tag> tags, Point offset)
+        public string Filename { get; }
+
+        public TagsDrawer(string filename, List<Tag> tags, Point offset, Size size)
         {
-            Bitmap = bitmap;
+            Filename = filename;
+            Bitmap = new Bitmap(size.Width, size.Height);
             Tags = tags;
             Offset = offset;
-            var graphics = Graphics.FromImage(Bitmap);
-            graphics.FillRectangle(Brushes.Black, 0, 0, Bitmap.Width, Bitmap.Height);   
+
+            FillBackground(Brushes.Black);
+            DrawTags();
+            SaveBitmap();
         }
 
-
-        public void DrawTags()
+        private void FillBackground(Brush brush)
         {
             var graphics = Graphics.FromImage(Bitmap);
+            graphics.FillRectangle(brush, 0, 0, Bitmap.Width, Bitmap.Height);
+        }
 
+        private void DrawTags()
+        {
+            var graphics = Graphics.FromImage(Bitmap);
             foreach (var tag in Tags)
             {
                 var tagSize = TextRenderer.MeasureText(tag.Text, tag.Font);
@@ -43,6 +51,11 @@ namespace TagsCloudVisualization
                         sourceRectangle.Size);
                 graphics.DrawString(tag.Text, tag.Font, tag.Brush, tag.Rectangle.Location);
             }
+        }
+
+        public void SaveBitmap()
+        {
+            Bitmap.Save(Filename);
         }
     }
 }
